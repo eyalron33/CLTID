@@ -59,7 +59,10 @@ contract CLTID is CLT, Ownable {
         uint256 nameId = uint256(sha256(abi.encodePacked(name)));
 
         // check that the name is unregistered
-        require( _names[nameId].expirationTimestamp < block.timestamp, "Woolball: name is already registered.");
+        require( _names[nameId].expirationTimestamp < block.timestamp, "Woolball: name is already registered");
+
+        // check that expirationTimestamp is in the future
+        require( expirationTimestamp > block.timestamp, "Woolball: expirationTimestamp is in the past");        
 
         _mint(owner, nameId);
 

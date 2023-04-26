@@ -10,6 +10,8 @@ contract CLTIDTest is Test {
 		CLTID CLTIDContract = new CLTID("CTLID", "CTLID");  
 		CLTID CLTIDContract2 = new CLTID("CTLID", "CTLID");  
 
+		uint256 expirationName = 1982424133;
+
 
 		// sanity test of creating a new name
 		function testNewName() public {
@@ -21,12 +23,12 @@ contract CLTIDTest is Test {
 		// testing the lock mechanism
 		function testLockAndTransferNames() public {
 			// create three names in CLTIDContract
-			uint256 nameId1 = CLTIDContract.newName("satoshi", address(this), 1682424133);
-			uint256 nameId2 = CLTIDContract.newName("hal", address(this), 1682424133);
-			uint256 nameId3 = CLTIDContract.newName("anonymous", address(this), 1682424133);
+			uint256 nameId1 = CLTIDContract.newName("satoshi", address(this), expirationName);
+			uint256 nameId2 = CLTIDContract.newName("hal", address(this), expirationName);
+			uint256 nameId3 = CLTIDContract.newName("anonymous", address(this), expirationName);
 
 			// create a name in a different name system
-			uint256 nameIdOtherSystem = CLTIDContract2.newName("Joybubbles", address(this), 1682424133);
+			uint256 nameIdOtherSystem = CLTIDContract2.newName("Joybubbles", address(this), expirationName);
 
 			// lock "hal" to "satoshi"
 			CLTIDContract.lock(nameId2, address(CLTIDContract), nameId1);
@@ -58,5 +60,41 @@ contract CLTIDTest is Test {
 			// check that locking of names with different owners fail
 			vm.expectRevert(bytes("Locked Token: the tokens do not have the same owner"));
 			CLTIDContract.lock(nameId3, address(CLTIDContract), nameId1);
+		}
+
+		function testDependence() public {
+			address poorProject = 0x9FA6312471ceEa9936eEFf2AE7b4a3678fa59685;
+			address richDAO = 0x9D49aa8F934Ab071429A8f3dAC3B99e558277374;
+			address thirdInnocentParty = 0xa2e8C4583a14E9A1e401f9c8304F713A27880141;
+
+			// create names
+			uint256 nameIdPoorProject = CLTIDContract.newName("poorProject", poorProject, expirationName);
+			uint256 nameIdAgreementToken = CLTIDContract.newName("agreementToken", richDAO, expirationName);
+
+			// set agreementToken to nontransferable
+			vm.prank(richDAO);
+			CLTIDContract.setTransferable(nameIdAgreementToken, false);
+
+			
+			//make poorProject dependent on AgreementToken
+			vm.prank(poorProject);
+			CLTIDContract.setDependence(nameIdPoorProject, address(CLTIDContract), nameIdAgreementToken);
+
+			// try to transfer poorProject to see it fails
+			vm.prank(poorProject);
+			vm.expectRevert(bytes("CLT: the token depends on at least one nontransferable token"));
+			CLTIDContract.transferFrom(poorProject, thirdInnocentParty, nameIdPoorProject);
+
+			// to remove dependence, richDAO needs first to make the token transferable
+			vm.prank(richDAO);
+			CLTIDContract.setTransferable(nameIdAgreementToken, true);
+
+			// remove poorProject dependence on AgreementToken
+			vm.prank(poorProject);
+			CLTIDContract.removeDependence(nameIdPoorProject, address(CLTIDContract), nameIdAgreementToken);
+
+			// check that poorProject can transfer nameIdPoorProject
+			vm.prank(poorProject);
+			CLTIDContract.transferFrom(poorProject, thirdInnocentParty, nameIdPoorProject);
 		}
 }

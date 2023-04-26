@@ -152,6 +152,12 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
         // casts CTContractAddress to type ICommanderToken 
         ICommanderToken CTContract = ICommanderToken(CTContractAddress);
 
+        // checks that tokenId is indeed dependent on CTId
+        require(
+            _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
+            "CLT: tokenId is not dependent on CTid from contract CTContractAddress"
+        );
+
         // CTContractAddress can always remove the dependency, but the owner 
         // of tokenId can remove it only if CTId is transferable & burnable
         require(
@@ -160,12 +166,6 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
             CTContract.isBurnable(CTId) ) ||
             ( msg.sender == CTContractAddress ),
             "CLT: sender is not permitted to remove dependency"
-        );
-
-        // checks that tokenId is indeed dependent on CTId
-        require(
-            _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
-            "CLT: tokenId is not dependent on CTid from contract CTContractAddress"
         );
 
         // gets the index of the token we are about to remove from dependencies
