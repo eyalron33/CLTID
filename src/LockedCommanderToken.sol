@@ -6,6 +6,9 @@ import "./interfaces/ICommanderToken.sol";
 import "./interfaces/ILockedToken.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 
+import "forge-std/console.sol";
+
+
 /**
  * @title CTL: Commander Locked Token, a token implementing both Commander and Locked Tokens interface
  * @author Eyal Ron
@@ -392,8 +395,15 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
         sameOwner(tokenId, LockingContract, LockingId)
     {
         // check that tokenId is unlocked
-        (, uint256 lockedCT) = isLocked(tokenId);
+        (address LockedContract, uint256 lockedCT) = isLocked(tokenId);
         require(lockedCT == 0, "Locked Token: token is already locked");
+
+        // Check that LockingId is not locked to tokenId, otherwise the locking enters a deadlock.
+        // Warning: A deadlock migt still happen if LockingId might is locked to another token 
+        // which is locked to tokenId, but we leave this unchecked, so be careful using this.
+        (LockedContract, lockedCT) = ILockedToken(LockingContract).isLocked(LockingId);
+        require(LockedContract != address(this) || lockedCT != tokenId, 
+            "Locked Token: Deadlock deteceted! LockingId is locked to tokenId");
 
         // lock token
         _tokens[tokenId].locked.tokensCollection = LockingContract;

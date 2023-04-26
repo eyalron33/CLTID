@@ -9,10 +9,10 @@ import "./StringUtils.sol";
 import "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 /**
- * @dev CTID contract
+ * @dev CLTID (Commander-Locked Token ID) contract
  * @dev An ID system based on Commander Token and Locked Token standard
  */
-contract CTID is CLT, Ownable {
+contract CLTID is CLT, Ownable {
 
     struct Name {
         address     resolver;
@@ -38,7 +38,7 @@ contract CTID is CLT, Ownable {
     }
 
     /**
-     * @dev Constructs a new CTID registry.
+     * @dev Constructs a new CLTID registry.
      */
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
