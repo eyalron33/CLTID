@@ -10,16 +10,16 @@ import "forge-std/console.sol";
 
 
 /**
- * @title CTL: Commander Locked Token, a token implementing both Commander and Locked Tokens interface
+ * @title LCT: Locked Commander Token, a token implementing both Commander and Locked Tokens interface
  * @author Eyal Ron
  */
-contract CLT is ICommanderToken, ILockedToken, ERC721 {
+contract LCT is ICommanderToken, ILockedToken, ERC721 {
     struct ExternalToken {
         address tokensCollection;
         uint256 tokenId;
     }
 
-    struct CLToken {
+    struct LCToken {
         bool nontransferable;
         bool nonburnable;
 
@@ -87,8 +87,8 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
         _;
     }
 
-    // CLT ID -> token's data
-    mapping(uint256 => CLToken) private _tokens;
+    // LCT ID -> token's data
+    mapping(uint256 => LCToken) private _tokens;
 
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
@@ -120,7 +120,7 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
         // checks that tokenId is not dependent already on CTId
         require(
             _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] == 0,
-            "CLT: tokenId already depends on CTid from CTContractAddress"
+            "LCT: tokenId already depends on CTid from CTContractAddress"
         );
 
         // creates ExternalCommanderToken variable to express the new dependency
@@ -155,7 +155,7 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
         // checks that tokenId is indeed dependent on CTId
         require(
             _tokens[tokenId].dependenciesIndex[CTContractAddress][CTId] > 0,
-            "CLT: tokenId is not dependent on CTid from contract CTContractAddress"
+            "LCT: tokenId is not dependent on CTid from contract CTContractAddress"
         );
 
         // CTContractAddress can always remove the dependency, but the owner 
@@ -165,7 +165,7 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
             CTContract.isTransferable(CTId) &&
             CTContract.isBurnable(CTId) ) ||
             ( msg.sender == CTContractAddress ),
-            "CLT: sender is not permitted to remove dependency"
+            "LCT: sender is not permitted to remove dependency"
         );
 
         // gets the index of the token we are about to remove from dependencies
@@ -524,7 +524,7 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
      * @dev isTokenBurnable must return 'true'.
      **/
     function burn(uint256 tokenId) public virtual override(ICommanderToken, ILockedToken) approvedOrOwner(tokenId) {
-        require(isTokenBurnable(tokenId), "CLT: the token or one of its Commander Tokens are not burnable");
+        require(isTokenBurnable(tokenId), "LCT: the token or one of its Commander Tokens are not burnable");
 
         // burn each token locked to tokenId 
         // if the token is unburnable, then simply unlock it
@@ -611,12 +611,12 @@ contract CLT is ICommanderToken, ILockedToken, ERC721 {
 
         require(
                 isTransferableToAddress(tokenId, to),
-                "CLT: the token status is set to nontransferable"
+                "LCT: the token status is set to nontransferable"
             );
 
         require(
                 isDependentTransferableToAddress(tokenId, to),
-                "CLT: the token depends on at least one nontransferable token"
+                "LCT: the token depends on at least one nontransferable token"
             );
 
         // transfer each token locked to tokenId 
