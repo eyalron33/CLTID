@@ -10,12 +10,13 @@ contract LCTIDTest is Test {
 		LCTID LCTIDContract = new LCTID("CTLID", "CTLID");  
 		LCTID LCTIDContract2 = new LCTID("CTLID", "CTLID");  
 
-		uint256 expirationName = 1982424133;
+		// just some random expiration date more than a 100 years in the future
+		uint256 expirationDate = 4902123711;
 
 
 		// sanity test of creating a new name
 		function testNewName() public {
-			uint256 nameId = LCTIDContract.newName("satoshi", 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84, 1682424133);
+			uint256 nameId = LCTIDContract.newName("satoshi", 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84, expirationDate);
 			address ownerOfName = LCTIDContract.ownerOf(nameId);
 			assertEq(ownerOfName, 0xb4c79daB8f259C7Aee6E5b2Aa729821864227e84);
 		}
@@ -23,12 +24,12 @@ contract LCTIDTest is Test {
 		// testing the lock mechanism
 		function testLockAndTransferNames() public {
 			// create three names in LCTIDContract
-			uint256 nameId1 = LCTIDContract.newName("satoshi", address(this), expirationName);
-			uint256 nameId2 = LCTIDContract.newName("hal", address(this), expirationName);
-			uint256 nameId3 = LCTIDContract.newName("anonymous", address(this), expirationName);
+			uint256 nameId1 = LCTIDContract.newName("satoshi", address(this), expirationDate);
+			uint256 nameId2 = LCTIDContract.newName("hal", address(this), expirationDate);
+			uint256 nameId3 = LCTIDContract.newName("anonymous", address(this), expirationDate);
 
 			// create a name in a different name system
-			uint256 nameIdOtherSystem = LCTIDContract2.newName("Joybubbles", address(this), expirationName);
+			uint256 nameIdOtherSystem = LCTIDContract2.newName("Joybubbles", address(this), expirationDate);
 
 			// lock "hal" to "satoshi"
 			LCTIDContract.lock(nameId2, address(LCTIDContract), nameId1);
@@ -68,8 +69,8 @@ contract LCTIDTest is Test {
 			address thirdInnocentParty = 0xa2e8C4583a14E9A1e401f9c8304F713A27880141;
 
 			// create names
-			uint256 nameIdPoorProject = LCTIDContract.newName("poorProject", poorProject, expirationName);
-			uint256 nameIdAgreementToken = LCTIDContract.newName("agreementToken", richDAO, expirationName);
+			uint256 nameIdPoorProject = LCTIDContract.newName("poorProject", poorProject, expirationDate);
+			uint256 nameIdAgreementToken = LCTIDContract.newName("agreementToken", richDAO, expirationDate);
 
 			// set agreementToken to nontransferable
 			vm.prank(richDAO);
