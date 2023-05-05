@@ -4,7 +4,7 @@ pragma solidity >=0.8.17;
 
 import "./interfaces/ICommanderToken.sol";
 import "./interfaces/ILockedToken.sol";
-import "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
 import "forge-std/console.sol";
 
@@ -13,7 +13,7 @@ import "forge-std/console.sol";
  * @title LCT: Locked Commander Token, a token implementing both Commander and Locked Tokens interface
  * @author Eyal Ron
  */
-contract LCT is ICommanderToken, ILockedToken, ERC721 {
+contract LCT is ICommanderToken, ILockedToken, ERC721Enumerable {
     struct ExternalToken {
         address tokensCollection;
         uint256 tokenId;
@@ -635,7 +635,7 @@ contract LCT is ICommanderToken, ILockedToken, ERC721 {
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view virtual override(ERC721, IERC165) returns (bool) {
+    ) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
         return
             interfaceId == type(ICommanderToken).interfaceId ||
             interfaceId == type(ILockedToken).interfaceId ||

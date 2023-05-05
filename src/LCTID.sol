@@ -12,7 +12,7 @@ import "openzeppelin-contracts/contracts/access/Ownable.sol";
  * @dev LCTID (Locked Commander Token ID) contract
  * @dev An ID system based on Commander Token and Locked Token standard
  */
-contract LCTID is LCT, Ownable {
+contract LCTID is LCT, Ownable { 
 
     struct Name {
         address     resolver;

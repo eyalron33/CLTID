@@ -1,4 +1,6 @@
-# CLTID: Commander Locked Token
+# LCTID: Commander Locked Token -- Deployment Branch
+
+**Note**. This is the deployment branch of LTCID that we intend to deply on Optimism. It contains some practical modification for deplyment, such as inheriting from ERC721Enumerable instead of from ERC721 (to be able to iterate names), attestationStation or extra functions to iterate lockings and dependencies for the LCTID App.
 
 A name system based on Commander and Locked Token standards.
 

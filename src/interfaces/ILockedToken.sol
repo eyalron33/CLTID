@@ -3,7 +3,7 @@
 
 pragma solidity >=0.8.17;
 
-import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 /**
  * @title Locked Token Reference Implementation
@@ -14,7 +14,7 @@ import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
  * @dev 2. every transfer of B, also transfers A.
  * @dev Locking is possible if and only if both tokens have the same owner.
  */
-interface ILockedToken is IERC721 {
+interface ILockedToken is IERC721Enumerable {
     /**
      * @dev Emitted when tokenId is locked to LockingId from LockingContract.
      */

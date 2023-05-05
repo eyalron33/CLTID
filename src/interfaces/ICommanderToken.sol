@@ -3,7 +3,7 @@
 
 pragma solidity >=0.8.17;
 
-import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
 /**
  * @title Commander Token Simple Implementation
@@ -14,7 +14,7 @@ import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
  * @dev If Token A depends on B, then if Token B is nontransferable or unburnable, so does Token A.
  * @dev if token B depedns on token A, we again call A a Commander Token (CT).
  */
-interface ICommanderToken is IERC721 {
+interface ICommanderToken is IERC721Enumerable {
 
     /**
      * @dev Emitted when a dependency on CTId from CTContractAddress is added to `tokenId`.
